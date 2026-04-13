@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BETTY Systems</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+            <link rel="icon" type="image/png" href="BETTY.PNG">
+    <style>
+        :root {
+            --bg-base: #020617;
+            --panel-bg: rgba(15, 23, 42, 0.65);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --sidebar-width: 70px;
+            
+            /* Status Colors */
+            --status-green: #10b981;
+            --status-orange: #f59e0b;
+            --status-red: #ef4444;
+        }
+
+        * { box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-base);
+            background-image: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 70%);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 8px 4px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); } 70% { box-shadow: 0 0 8px 4px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 8px 4px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+        /* --- SIDEBAR NAV --- */
+        nav {
+            width: var(--sidebar-width);
+            background: rgba(2, 6, 23, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-icon { color: var(--text-dim); display: flex; flex-direction: column; align-items: center; cursor: default; }
+        .nav-icon span.material-symbols-outlined { font-size: 28px; color: var(--text-main); }
+
+        /* --- MAIN CONTENT AREA --- */
+        main { flex: 1; display: flex; flex-direction: column; padding: 25px; overflow-y: auto; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+            background: var(--panel-bg); padding: 15px 25px; border-radius: 12px; border: 1px solid var(--border); 
+            backdrop-filter: blur(10px); animation: popIn 0.5s ease-out;
+        }
+
+        .logo-group h1 { margin: 0; font-size: 1.4rem; color: var(--text-main); letter-spacing: 3px; font-weight: 600; }
+        .logo-group h1 span { color: var(--text-dim); }
+        .stats-bar { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-dim); margin-top: 5px; }
+
+        /* --- GRID LAYOUT --- */
+        .dashboard { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+            gap: 20px; 
+            align-content: start; 
+        }
+
+        .panel {
+            background: var(--panel-bg); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 12px;
+            padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .panel:hover { border-color: rgba(255,255,255,0.2); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
+
+        .panel-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+        .panel-title-group { display: flex; flex-direction: column; gap: 4px;}
+        .panel-title { font-size: 1rem; font-weight: 600; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .panel-desc { font-size: 0.8rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+        /* --- STATUS BADGES --- */
+        .status-badge { 
+            display: flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 6px; background: rgba(0,0,0,0.4);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        .status-ON-GOING .dot { background: var(--status-green); animation: pulse-green 1.5s infinite; }
+        .status-ON-GOING { color: var(--status-green); border: 1px solid rgba(16, 185, 129, 0.2); }
+
+        .status-ON-HOLD .dot { background: var(--status-orange); animation: pulse-orange 2s infinite; }
+        .status-ON-HOLD { color: var(--status-orange); border: 1px solid rgba(245, 158, 11, 0.2); }
+
+        .status-REJECTED .dot { background: var(--status-red); animation: pulse-red 2.5s infinite; }
+        .status-REJECTED { color: var(--status-red); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        /* --- SUBPROJECTS --- */
+        .subprojects-container { display: flex; flex-direction: column; gap: 8px; }
+        .subproject { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(0,0,0,0.25); padding: 10px 12px; border-radius: 8px; 
+            border-left: 3px solid var(--border); font-size: 0.9rem;
+        }
+        .subproject.ON-GOING { border-left-color: var(--status-green); }
+        .subproject.ON-HOLD { border-left-color: var(--status-orange); }
+        .subproject.REJECTED { border-left-color: var(--status-red); }
+
+        .sub-title { display: flex; align-items: center; gap: 8px; }
+        .sub-title span.material-symbols-outlined { font-size: 16px; color: var(--text-dim); }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-icon" title="BETTY Root"><span class="material-symbols-outlined">account_tree</span></div>
+    </nav>
+
+    <main>
+        <header>
+            <div class="logo-group">
+                <h1>BE<span>TTY</span></h1>
+                <div class="stats-bar">
+                    <span>Branching Entity Tracking & Telemetry Yard</span><br>
+                    <span>SYS: <span style="color:var(--status-green); text-shadow: 0 0 5px rgba(16,185,129,0.5);">ONLINE</span> | PARSING JSON DIRECTORY</span>
+                </div>
+            </div>
+            <div style="text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim);">
+                <div>Total Entities: <span id="total-count" style="color: #fff;">0</span></div>
+                <div>Active Yield: <span id="active-count" style="color: var(--status-green);">0</span></div>
+            </div>
+        </header>
+
+        <div class="dashboard" id="project-board">
+            </div>
+    </main>
+
+    <script>
+        // Default stackable JSON structure (Used if fetch fails)
+        const fallbackData = [
+            {
+                "id": "001",
+                "title": "AURORA SYSTEMS",
+                "description": "General Assist Tool",
+                "status": "ON-GOING",
+                "subprojects": [
+                    { "title": "Basic Aurora Systems", "status": "ON-GOING" },
+                    { "title": "Integration of AI assets", "status": "ON-HOLD" }
+                ]
+            },
+            {
+                "id": "002",
+                "title": "Protocore Network",
+                "description": "Browser Gaming Site",
+                "status": "ON-HOLD",
+                "subprojects": [
+
+                ]
+            },
+            {
+                "id": "003",
+                "title": "NIVI AI",
+                "description": "ARTIFICIAL INTELIGANCE BOT",
+                "status": "REJECTED",
+                "subprojects": [
+                    { "title": "Bot Development", "status": "REJECTED" },
+                    { "title": "Integration of AI", "status": "REJECTED" }
+                ]
+            },
+            {
+                "id": "004",
+                "title": "VoidMoth",
+                "description": "█████████",
+                "status": "ON-GOING",
+                "subprojects": [
+                    { "title": "ACK SUBPROJECT", "status": "ON-HOLD" },
+                ]
+            },
+            {
+                "id": "005",
+                "title": "FNAA",
+                "description": "FIVE NIGHTS AT ALHPA'S",
+                "status": "REJECTED",
+                "subprojects": [
+                    { "title": "REJECTED DUE TO SHORTAGE OF TIME", "status": "REJECTED" },
+                ]
+            },
+        ];
+
+        async function initBetty() {
+            let projectData;
+            
+            try {
+                // Attempt to fetch local JSON file. 
+                // Note: Will fail if opened directly via file:// protocol without a server.
+                const response = await fetch('betty_data.json');
+                if (!response.ok) throw new Error("Local file not found, using fallback.");
+                projectData = await response.json();
+            } catch (error) {
+                console.warn("BETTY:", error.message);
+                projectData = fallbackData; // Inject stackable data
+            }
+
+            renderBoard(projectData);
+        }
+
+        function renderBoard(projects) {
+            const board = document.getElementById('project-board');
+            let activeCount = 0;
+            let totalCount = projects.length;
+
+            board.innerHTML = projects.map(proj => {
+                // Tally stats
+                if (proj.status === 'ON-GOING') activeCount++;
+                totalCount += (proj.subprojects ? proj.subprojects.length : 0);
+
+                // Build subprojects HTML string
+                let subHtml = '';
+                if (proj.subprojects && proj.subprojects.length > 0) {
+                    subHtml = `<div class="subprojects-container">` + 
+                        proj.subprojects.map(sub => `
+                            <div class="subproject ${sub.status}">
+                                <div class="sub-title">
+                                    <span class="material-symbols-outlined">subdirectory_arrow_right</span>
+                                    ${sub.title}
+                                </div>
+                                <div class="status-badge status-${sub.status}">
+                                    <div class="dot"></div>
+                                </div>
+                            </div>
+                        `).join('') + `</div>`;
+                } else {
+                    subHtml = `<div style="color:var(--text-dim); font-size:0.8rem; font-style:italic;">No active child nodes.</div>`;
+                }
+
+                // Format status for CSS classes (Replace spaces with hyphens if necessary)
+                const statusClass = proj.status.replace(' ', '-');
+                const statusLabel = proj.status.replace('-', ' ');
+
+                // Build main panel
+                return `
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title-group">
+                                <span class="panel-title"><span class="material-symbols-outlined">folder_open</span> ${proj.title}</span>
+                                <span class="panel-desc">[${proj.id}] ${proj.description}</span>
+                            </div>
+                            <div class="status-badge status-${statusClass}">
+                                <div class="dot"></div> ${statusLabel}
+                            </div>
+                        </div>
+                        ${subHtml}
+                    </div>
+                `;
+            }).join('');
+
+            // Update stats board
+            document.getElementById('total-count').innerText = totalCount;
+            document.getElementById('active-count').innerText = activeCount;
+        }
+
+        // Boot sequence
+        window.onload = initBetty;
+    </script>
+</body>
+</html>
